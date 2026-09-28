@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs");
 const User = require('../models/User.model');
-const saltRounds = 10;
 const jwt = require('jsonwebtoken')
 
 exports.register = async (req, res) => {
@@ -59,13 +58,13 @@ exports.login = async (req, res) => {
     const foundUser = await User.findOne({ username });
 
     if (!foundUser) {
-      return res.status(401).json({ message: "User not found." });
+      return res.status(401).json({ message: "Invalid Credentials" });
     }
 
     const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
 
     if (!passwordCorrect) {
-      return res.status(401).json({ message: "Incorrect password." });
+      return res.status(401).json({ message: "Invalid Credentials" });
     }
 
     const { _id, email, username: userName } = foundUser;

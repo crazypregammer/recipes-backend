@@ -10,9 +10,9 @@ exports.getRecipes = async (req, res) => {
 }
 
 exports.getRecipeById = async (req, res) => {
-    try {
-        const foundRecipe = await Recipe.findById(req.params.id);
-        res.status(200).json(foundRecipe);
+    try {  
+      const foundRecipe = await Recipe.findById(req.params.id);
+      res.status(200).json(foundRecipe);
     } catch (error) {
         console.log(error);
     }
@@ -20,17 +20,20 @@ exports.getRecipeById = async (req, res) => {
 
 exports.createRecipe = async (req, res) => {
   try {
-    const { title, ingredients, instructions } = req.body;
+    const { title, img, ingredients, steps, category, time } = req.body;
 
-    if (!title || !ingredients || !instructions) {
+    if (!title || !img || !ingredients || !steps || !category || !time) {
       return res.status(400).json({ message: "Missing fields" });
     }
 
     const newRecipe = await Recipe.create({
       title,
+      img,
       ingredients,
-      instructions,
-      owner: req.user._id   // viene del verifyToken
+      steps,
+      category,
+      time,
+      creator: req.user._id
     });
 
     res.status(201).json(newRecipe);
@@ -39,6 +42,7 @@ exports.createRecipe = async (req, res) => {
     res.status(500).json({ message: "Error creating recipe" });
   }
 };
+
 
 // 📌 Editar receta (PROTEGIDA)
 exports.updateRecipe = async (req, res) => {

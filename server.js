@@ -7,7 +7,6 @@ const app = express();
 
 const authRoutes = require('./routes/auth.routes');
 const recipeRoutes = require('./routes/recipe.routes');
-const verifyToken = require("./middlewares/verifyToken");
 
 app.use(cors());
 app.use(express.json());
