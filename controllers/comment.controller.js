@@ -1,6 +1,6 @@
+const Comment = require("../models/Comment.model");
 const Recipe = require("../models/Recipe.model");
 
-// ⭐ Crear comentario
 exports.addComment = async (req, res) => {
   try {
     const { text } = req.body;
@@ -10,20 +10,21 @@ exports.addComment = async (req, res) => {
       return res.status(400).json({ message: "Comment text is required" });
     }
 
-    const updatedRecipe = await Recipe.findByIdAndUpdate(
-      recipeId,
-      {
-        $push: {
-          comments: {
-            text,
-            author: req.user._id
-          }
-        }
-      },
-      { new: true }
-    ).populate("comments.author", "username email");
+    // Verificar que la receta existe
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
 
-    res.json(updatedRecipe);
+    const newComment = await Comment.create({
+      text,
+      author: req.user._id,
+      recipe: recipeId
+    });
+
+    const populatedComment = await newComment.populate("author", "username email");
+
+    res.status(201).json(populatedComment);
 
   } catch (err) {
     console.log(err);
@@ -31,32 +32,39 @@ exports.addComment = async (req, res) => {
   }
 };
 
-// ⭐ Borrar comentario
+exports.getCommentsByRecipe = async (req, res) => {
+  try {
+    const recipeId = req.params.id;
+
+    const comments = await Comment.find({ recipe: recipeId })
+      .populate("author", "username email")
+      .sort({ createdAt: -1 });
+
+    res.json(comments);
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error fetching comments" });
+  }
+};
+
 exports.deleteComment = async (req, res) => {
   try {
-    const { id, commentId } = req.params;
+    const { commentId } = req.params;
 
-    const recipe = await Recipe.findById(id);
-
-    if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
-    }
-
-    const comment = recipe.comments.id(commentId);
+    const comment = await Comment.findById(commentId);
 
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
 
-    // Solo el autor del comentario puede borrarlo
     if (String(comment.author) !== String(req.user._id)) {
       return res.status(403).json({ message: "Not allowed to delete this comment" });
     }
 
-    comment.remove();
-    await recipe.save();
+    await Comment.findByIdAndDelete(commentId);
 
-    res.json({ message: "Comment deleted", recipe });
+    res.json({ message: "Comment deleted" });
 
   } catch (err) {
     console.log(err);
@@ -64,33 +72,25 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
-// ⭐ Editar comentario (opcional)
 exports.editComment = async (req, res) => {
   try {
-    const { id, commentId } = req.params;
+    const { commentId } = req.params;
     const { text } = req.body;
 
-    const recipe = await Recipe.findById(id);
-
-    if (!recipe) {
-      return res.status(404).json({ message: "Recipe not found" });
-    }
-
-    const comment = recipe.comments.id(commentId);
+    const comment = await Comment.findById(commentId);
 
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
 
-    // Solo el autor puede editar
     if (String(comment.author) !== String(req.user._id)) {
       return res.status(403).json({ message: "Not allowed to edit this comment" });
     }
 
     comment.text = text;
-    await recipe.save();
+    await comment.save();
 
-    res.json({ message: "Comment updated", recipe });
+    res.json({ message: "Comment updated", comment });
 
   } catch (err) {
     console.log(err);

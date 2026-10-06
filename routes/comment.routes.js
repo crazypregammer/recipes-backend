@@ -4,16 +4,20 @@ const verifyToken = require("../middlewares/verifyToken");
 const {
   addComment,
   deleteComment,
-  editComment
+  editComment,
+  getCommentsByRecipe
 } = require("../controllers/comment.controller");
 
-// Crear comentario
-router.post("/:id/comments", verifyToken, addComment);
+// Obtener comentarios de una receta
+router.get("/recipe/:recipeId", getCommentsByRecipe);
 
-// Borrar comentario
-router.delete("/:id/comments/:commentId", isAuthenticated, deleteComment);
+// Crear comentario
+router.post("/recipe/:recipeId", verifyToken, addComment);
 
 // Editar comentario
-router.put("/:id/comments/:commentId", isAuthenticated, editComment);
+router.put("/:commentId", verifyToken, editComment);
+
+// Borrar comentario
+router.delete("/:commentId", verifyToken, deleteComment);
 
 module.exports = router;

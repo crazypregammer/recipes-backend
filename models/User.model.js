@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: [true, "Please provide an username"],
+        required: [true, "Please provide a username"],
         unique: true
     },
     email: {
@@ -15,6 +15,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     }
-})
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
