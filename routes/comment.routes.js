@@ -2,22 +2,22 @@ const router = require("express").Router();
 const verifyToken = require("../middlewares/verifyToken");
 
 const {
+  getCommentsByRecipe,
   addComment,
-  deleteComment,
   editComment,
-  getCommentsByRecipe
+  deleteComment
 } = require("../controllers/comment.controller");
 
-// Obtener comentarios de una receta
+// GET comentarios de una receta
 router.get("/recipe/:recipeId", getCommentsByRecipe);
 
-// Crear comentario
+// POST crear comentario
 router.post("/recipe/:recipeId", verifyToken, addComment);
 
-// Editar comentario
+// PUT editar comentario
 router.put("/:commentId", verifyToken, editComment);
 
-// Borrar comentario
+// DELETE borrar comentario
 router.delete("/:commentId", verifyToken, deleteComment);
 
 module.exports = router;

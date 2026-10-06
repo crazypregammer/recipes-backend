@@ -7,6 +7,7 @@ const app = express();
 
 const authRoutes = require('./routes/auth.routes');
 const recipeRoutes = require('./routes/recipe.routes');
+const commentRoutes = require("./routes/comment.routes");
 
 app.use(cors());
 app.use(express.json());
@@ -16,6 +17,9 @@ app.use("/api/auth", authRoutes);
 
 // rutas protegidas
 app.use("/api", recipeRoutes);
+
+// rutas de comentarios
+app.use("/api/comments", commentRoutes);
 
 app.listen(process.env.PORT, () => {
     console.log("Server running at PORT: 5005");

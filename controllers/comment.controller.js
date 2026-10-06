@@ -1,10 +1,12 @@
 const Comment = require("../models/Comment.model");
 const Recipe = require("../models/Recipe.model");
+const mongoose = require("mongoose");
 
+// ⭐ Crear comentario
 exports.addComment = async (req, res) => {
   try {
     const { text } = req.body;
-    const recipeId = req.params.id;
+    const recipeId = req.params.recipeId;   // ⭐ FIX
 
     if (!text || text.trim() === "") {
       return res.status(400).json({ message: "Comment text is required" });
@@ -32,9 +34,19 @@ exports.addComment = async (req, res) => {
   }
 };
 
+// ⭐ Obtener comentarios
 exports.getCommentsByRecipe = async (req, res) => {
   try {
-    const recipeId = req.params.id;
+    const recipeId = req.params.recipeId;
+
+    if (!mongoose.Types.ObjectId.isValid(recipeId)) {
+      return res.status(400).json({ message: "Invalid recipe ID" });
+    }
+
+    const recipeExists = await Recipe.findById(recipeId);
+    if (!recipeExists) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
 
     const comments = await Comment.find({ recipe: recipeId })
       .populate("author", "username email")
@@ -48,6 +60,7 @@ exports.getCommentsByRecipe = async (req, res) => {
   }
 };
 
+// ⭐ Borrar comentario
 exports.deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params;
@@ -72,6 +85,7 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
+// ⭐ Editar comentario
 exports.editComment = async (req, res) => {
   try {
     const { commentId } = req.params;
