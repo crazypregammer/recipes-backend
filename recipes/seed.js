@@ -3,7 +3,7 @@ const Recipe = require("../models/Recipe.model");
 
 const MONGO_URI = "mongodb://127.0.0.1:27017/recipesDB";
 
-const userId = new mongoose.Types.ObjectId("6ac52af47aee7fb345559e15");
+const userId = new mongoose.Types.ObjectId("6ac541653006934181ebc753");
 
 const recipes = [
   {
