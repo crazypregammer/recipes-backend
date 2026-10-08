@@ -15,6 +15,8 @@ app.use(express.json());
 // rutas públicas
 app.use("/api/auth", authRoutes);
 
+
+
 // rutas protegidas
 app.use("/api", recipeRoutes);
 
