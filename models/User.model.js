@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
         required: [true, "Please provide an email"],
         unique: true
     },
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
     password: {
         type: String,
         required: true

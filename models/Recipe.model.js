@@ -8,7 +8,8 @@ const recipeSchema = new mongoose.Schema(
     steps: [String],
     category: String,
     time: String,
-
+    likes: { type: Number, default: 0 },
+    likedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

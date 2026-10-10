@@ -5,6 +5,7 @@ require('./config/db');
 
 const app = express();
 
+const userRoutes = require("./routes/user.routes");
 const authRoutes = require('./routes/auth.routes');
 const recipeRoutes = require('./routes/recipe.routes');
 const commentRoutes = require("./routes/comment.routes");
@@ -15,10 +16,10 @@ app.use(express.json());
 // rutas públicas
 app.use("/api/auth", authRoutes);
 
+// rutas de recetas
+app.use("/api/recipes", recipeRoutes);
+app.use("/api/users", userRoutes);
 
-
-// rutas protegidas
-app.use("/api", recipeRoutes);
 
 // rutas de comentarios
 app.use("/api/comments", commentRoutes);

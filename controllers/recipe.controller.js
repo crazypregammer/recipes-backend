@@ -1,87 +1,74 @@
-const Recipe = require('../models/Recipe.model');
+const Recipe = require("../models/Recipe.model");
 
+// GET ALL
 exports.getRecipes = async (req, res) => {
-    try {
-        const allRecipes = await Recipe.find();
-        res.status(200).json(allRecipes);
-    } catch (error) {
-        console.log("error");
-    }
-}
+  try {
+    const recipes = await Recipe.find()
+      .populate("creator", "username"); // solo info necesaria
 
+    res.json(recipes);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error getting recipes" });
+  }
+};
+
+// GET ONE (SIEMPRE SE PUEDE VER, ESTÉS LOGUEADA O NO)
 exports.getRecipeById = async (req, res) => {
-    try {  
-      const foundRecipe = await Recipe.findById(req.params.id).populate("creator", "username");
+  try {
+    const recipe = await Recipe.findById(req.params.id)
+      .populate("creator", "username")     // esto sí
+      .populate("likedBy", "_id");         // SOLO _id → evita errores
 
-      
-      res.status(200).json(foundRecipe);
-    } catch (error) {
-        console.log(error);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
     }
-}
 
+    res.json(recipe);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Error getting recipe" });
+  }
+};
+
+// CREATE
 exports.createRecipe = async (req, res) => {
   try {
-    const { title, img, ingredients, steps, category, time } = req.body;
-
-    if (!title || !img || !ingredients || !steps || !category || !time) {
-      return res.status(400).json({ message: "Missing fields" });
-    }
-
     const newRecipe = await Recipe.create({
-      title,
-      img,
-      ingredients,
-      steps,
-      category,
-      time,
+      ...req.body,
       creator: req.user._id
     });
 
-    res.status(201).json(newRecipe);
-  } catch (error) {
-    console.log(error);
+    res.json(newRecipe);
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Error creating recipe" });
   }
 };
 
-
-// 📌 Editar receta (PROTEGIDA)
+// UPDATE
 exports.updateRecipe = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const updatedRecipe = await Recipe.findByIdAndUpdate(
-      id,
+    const updated = await Recipe.findByIdAndUpdate(
+      req.params.id,
       req.body,
       { new: true }
     );
 
-    if (!updatedRecipe) {
-      return res.status(404).json({ message: "Recipe not found" });
-    }
-
-    res.status(200).json(updatedRecipe);
-  } catch (error) {
-    console.log(error);
+    res.json(updated);
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Error updating recipe" });
   }
 };
 
-// 📌 Eliminar receta (PROTEGIDA)
+// DELETE
 exports.deleteRecipe = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const deletedRecipe = await Recipe.findByIdAndDelete(id);
-
-    if (!deletedRecipe) {
-      return res.status(404).json({ message: "Recipe not found" });
-    }
-
-    res.status(200).json({ message: "Recipe deleted" });
-  } catch (error) {
-    console.log(error);
+    await Recipe.findByIdAndDelete(req.params.id);
+    res.json({ message: "Recipe deleted" });
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Error deleting recipe" });
   }
 };
