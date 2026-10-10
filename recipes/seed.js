@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Recipe = require("../models/Recipe.model");
 
-const MONGO_URI = "mongodb://127.0.0.1:27017/recipesDB";
+const MONGO_URI = "mongodb+srv://moilqp_db_user:euvegaCfDTWre0rO@cluster0.c4h5hqp.mongodb.net/recipesDB";
 
 const userId = new mongoose.Types.ObjectId("6ac541653006934181ebc753");
 

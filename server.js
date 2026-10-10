@@ -22,6 +22,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/recipes", recipeRoutes);
 app.use("/api/users", userRoutes);
 
+app.get("/", () => {
+    res.send("API is running");
+})
 
 // rutas de comentarios
 app.use("/api/comments", commentRoutes);
