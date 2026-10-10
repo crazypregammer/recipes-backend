@@ -22,7 +22,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/recipes", recipeRoutes);
 app.use("/api/users", userRoutes);
 
-app.get("/", () => {
+app.get("/", (req, res) => {
     res.send("API is running");
 })
 
